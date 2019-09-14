@@ -1,0 +1,152 @@
+---
+title: "Project 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##### 1. Write the <tt> "tinting" </tt>  file found in the <tt> "DAAG" </tt> package to disk in R data format.  
+```{r}
+library(DAAG)
+library(tidyverse)
+write_rds(tinting, "tinting.rds")
+```
+##### 2. Read the saved tinting dataset file from disk and assign to a new file name. Create a table of gender <tt> (sex) </tt> by age <tt> (agegp) </tt> using the <tt> "table" </tt> command.
+```{r}
+new_tinting <- read_rds("tinting.rds")
+table(Sex=new_tinting$sex, AgeGroup=new_tinting$agegp)
+```
+##### 3. Interest on $1000, compounded annually at 7.5% for five years, can be determined with:
+$$ 1000 \times ((1+0.075)^5 - 1) $$
+&nbsp; &nbsp; a.) Evaluate the above expression.
+```{r}
+p <- 1000
+rate <- 0.075
+n <- 5
+prin <- p * (1+rate)^(0:(n-1))
+int  <- prin * rate
+totalInt <- sum(int)
+totalInt
+```
+&nbsp; &nbsp; b.) Modify the expression to determine the amount of interest paid if the rate is 3.5%.
+```{r}
+p <- 1000
+rate <- 0.035
+n <- 5
+prin <- p * (1+rate)^(0:(n-1))
+int  <- prin * rate
+totalInt <- sum(int)
+totalInt
+```
+&nbsp; &nbsp; c.) Calculate and explain the result obtained when the exponent 5 is changed to <tt> seq(1,10) </tt>.  
+```{r}
+p <- 1000
+rate <- 0.075
+n <- seq(1,10)
+prin <- p * (1+rate)^(n)
+int  <- prin * rate
+totalInt <- sum(int)
+
+#This is the principal compounded for 10 yrs (starting at year 1 end).
+prin
+#This is the interest accrued over 10 yrs (starting at year 1 end).
+int
+#This is the total principal after 10 yrs. plus the accrued interest.
+totalInt
+```
+##### 4. Use R to calculate the following:
+&nbsp; &nbsp; a.) Calculate the first 50 powers of 2, i.e., $2^2, 2^3,\ldots$ etc.
+```{r}
+v1 <- 2
+v2 <- c(1:50)
+pow_first_50 <- function(x) {
+  v1**v2
+}
+v3 <- pow_first_50(x)
+format(v3, scientific = F)
+v4 <- sum(pow_first_50(x))
+format(v4, scientific = F)
+```
+&nbsp; &nbsp; b.) Calculate the squares of the integers from 1 to 50.
+```{r}
+pow_two <- function(x) {
+  v2**v1
+}
+v5 <- pow_two(x)
+v5
+sum(pow_two(x))
+```
+&nbsp; &nbsp; c.) Which pairs from (a) and (b) are equal? (i.e. which fulfill the condition $2^n = n^2$)
+```{r}
+intersect(v3,v5)
+```
+&nbsp; &nbsp; d.) How many pairs from (c) are there?
+```{r}
+length(intersect(v3,v5))
+```
+##### 5. Create a vector <tt>x</tt> and:   
+&nbsp; &nbsp; a.) Assign to <tt>x</tt> the values 3, 11, 8, 15, 12
+```{r}
+x <- c(3, 11, 8, 15, 12)
+```
+&nbsp; &nbsp; b.) Extract only elements in the $2^{nd}$ and $4^{th}$ positions of the vector.
+```{r}
+x[c(2,4)]
+```
+&nbsp; &nbsp; c.) Use negative subscripts to omit the elements in the $2^{nd}$ and $3^{rd}$ positions.
+```{r}
+x[c(-2, -3)]
+```
+&nbsp; &nbsp; d.) Extract values of $x$ that are greater than 10.
+```{r}
+x[x>10]
+```
+##### 6. Use the "<tt>RSiteSearch</tt>" command in R to find the function which performs a  spectral decomposition of a matrix.
+```{r}
+# This is suggested syntax from R documentation, but appears there may currently be a bug adding '+' between keywords when the site opens.
+RSiteSearch("{spectral decomposition of a matrix}")
+# Used this as well as an adequate replacement
+help.search("spectral decomposition of a matrix")
+```
+##### 7.  Use help to determine what "<tt>floor</tt>", "<tt>trunc</tt>", "<tt>round</tt>" and  "<tt>ceiling</tt>"" do and how to use them.  What do you think each would do to the  numbers -3.7 and 3.8?
+```{r}
+?floor
+
+y <- c(-3.7, 3.8)
+# Floor returns the largest integer not greater than the giving number, -3 would be greater than -4, 4 would be greater than 3
+floor(y)
+# Trunc brings the number closer to 0
+trunc(y)
+# Round simply rounds to the closest integer
+round(y)
+# Ceiling returns the smallest integer larger than the parameter
+ceiling(y)
+```
+
+##### 8. The orings data frame (in <tt>DAAG</tt>) gives data on the damage that had occurred in US space shuttle launches prior to the disastrous Challenger launch of January 28, 1986. Only observations in rows 1, 2, 4, 11, 13, and 18 were included in the pre-launch charts.
+
+&nbsp; &nbsp; a.) Create a new data frame by extracting these rows from orings
+```{r}
+str(orings)
+orings
+
+orings_new <- orings[c(1,2,4,11,13,18),c(1:4)]
+orings_new
+```
+&nbsp; &nbsp; b.) Plot total incidents against temperature for pre-launch and using all the data in side by side plots in a single frame. 
+```{r}
+plot1 <- ggplot(orings_new, aes(x = Temperature, y = Total)) +
+  geom_point(shape = 21, alpha = 0.5) + 
+  scale_y_continuous(limits = c(0,5)) + 
+  scale_x_continuous(limits = c(50,85)) + 
+  geom_jitter(width = 0.1)
+
+plot2 <- ggplot(orings, aes(x = Temperature, y = Total)) +
+  geom_point(shape = 21, alpha = 0.5) +
+  scale_x_continuous(limits = c(50,85))
+
+library(cowplot)
+plot_grid(plot1, plot2, labels = "AUTO")
+```
